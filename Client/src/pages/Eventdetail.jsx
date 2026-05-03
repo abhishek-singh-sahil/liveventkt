@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import api from '../utils/axios';
-import BookNow from './booknow';
+import BookNow from './BookNow';
 
 
 const Eventdetail = () => {
