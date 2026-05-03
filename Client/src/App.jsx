@@ -12,7 +12,7 @@ import Home from './pages/Home'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Eventdetail from './pages/Eventdetail'
-import BookNow from './pages/booknow'
+import BookNow from './pages/BookNow'
 import VerifyOtp from './pages/VerifyOtp'
 import BookingPending from './pages/BookingPending'
 
