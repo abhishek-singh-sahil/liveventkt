@@ -1,10 +1,13 @@
 import React, { useState, useRef, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
-const VerifyOtp = ({ setOpen, email, setView }) => {
-  const { verifyOtp } = useContext(AuthContext);
-  const navigate = useNavigate();
+const VerifyOtp = () => {
+  const {
+    verifyOtp,
+    setOpenAuth,
+    authEmail,
+    setAuthView
+  } = useContext(AuthContext);
 
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [loading, setLoading] = useState(false);
@@ -30,18 +33,15 @@ const VerifyOtp = ({ setOpen, email, setView }) => {
     }
   };
 
-  // 🔥 FIXED SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     const finalOtp = otp.join("");
 
-    console.log("EMAIL:", email);
-    console.log("OTP:", finalOtp);
-
-    if (!email) {
-      setError("Email missing. Please login again.");
+    if (!authEmail) {
+      setError("Session expired. Please try again.");
+      setAuthView("login"); // 🔥 fallback
       return;
     }
 
@@ -53,19 +53,15 @@ const VerifyOtp = ({ setOpen, email, setView }) => {
     setLoading(true);
 
     try {
-      const data = await verifyOtp(email, finalOtp);
-
-      console.log("VERIFY RESPONSE:", data);
+      const data = await verifyOtp(authEmail, finalOtp);
 
       if (data.token) {
-        setOpen(false);
-        navigate("/");
+        setOpenAuth(false);   // 🔥 CLOSE MODAL
       } else {
         setError(data.message || "Invalid OTP");
       }
 
     } catch (err) {
-      console.log("OTP ERROR:", err);
       setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -81,7 +77,7 @@ const VerifyOtp = ({ setOpen, email, setView }) => {
 
       <p className="text-sm text-gray-500 text-center mb-5">
         Enter OTP sent to <br />
-        <span className="font-medium text-gray-700">{email}</span>
+        <span className="font-medium text-gray-700">{authEmail}</span>
       </p>
 
       {error && (
@@ -107,7 +103,6 @@ const VerifyOtp = ({ setOpen, email, setView }) => {
         ))}
       </div>
 
-      {/* Button */}
       <button
         type="submit"
         className="w-full py-2.5 rounded-lg text-white font-medium
@@ -125,7 +120,7 @@ const VerifyOtp = ({ setOpen, email, setView }) => {
 
       <p className="text-sm text-center text-gray-600 mt-2">
         <span
-          onClick={() => setView("login")}
+          onClick={() => setAuthView("login")}   // 🔥 FIXED
           className="text-purple-600 cursor-pointer hover:underline"
         >
           ← Back to Login

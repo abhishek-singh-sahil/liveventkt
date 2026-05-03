@@ -2,8 +2,12 @@ import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Info } from "lucide-react";
 
-const Register = ({ setView, setEmail }) => {
-  const { register } = useContext(AuthContext);
+const Register = () => {
+  const {
+    register,
+    setAuthView,
+    setAuthEmail
+  } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     name: "",
@@ -16,7 +20,7 @@ const Register = ({ setView, setEmail }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 🔥 Smooth strength logic
+  // 🔥 Password strength logic
   const getPasswordStrength = (password) => {
     let score = 0;
 
@@ -26,12 +30,11 @@ const Register = ({ setView, setEmail }) => {
     if (/[0-9]/.test(password)) score += 1;
     if (/[!@#$%^&*]/.test(password)) score += 1;
 
-    return score; // max 5
+    return score;
   };
 
-  // 🎨 Smooth color transition using HSL
   const getStrengthColor = () => {
-    const hue = (strength / 5) * 120; // 0 = red, 120 = green
+    const hue = (strength / 5) * 120;
     return `hsl(${hue}, 90%, 45%)`;
   };
 
@@ -67,9 +70,10 @@ const Register = ({ setView, setEmail }) => {
         form.phone
       );
 
+      // ✅ OTP FLOW
       if (data?.message?.includes("verify")) {
-        setEmail(form.email);
-        setView("otp");
+        setAuthEmail(form.email);   // 🔥 STORE EMAIL GLOBALLY
+        setAuthView("otp");         // 🔥 SWITCH TO OTP
       } else {
         setError(data?.message || "Registration failed");
       }
@@ -112,7 +116,7 @@ const Register = ({ setView, setEmail }) => {
           required
         />
 
-        {/* 🔥 PASSWORD FIELD */}
+        {/* PASSWORD */}
         <div className="relative">
           <input
             type="password"
@@ -124,11 +128,9 @@ const Register = ({ setView, setEmail }) => {
             required
           />
 
-          {/* 🔥 INFO ICON */}
           <div className="absolute right-3 top-3 group cursor-pointer">
             <Info size={18} className="text-gray-400" />
 
-            {/* Tooltip */}
             <div className="absolute right-0 mt-2 w-56 p-3 bg-black text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition pointer-events-none z-50">
               Password must include:
               <ul className="mt-1 space-y-1">
@@ -140,7 +142,6 @@ const Register = ({ setView, setEmail }) => {
             </div>
           </div>
 
-          {/* 🔥 ANIMATED STRENGTH BAR */}
           <div className="mt-2 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
             <div
               className="h-full transition-all duration-500 ease-out"
@@ -152,7 +153,6 @@ const Register = ({ setView, setEmail }) => {
             />
           </div>
 
-          {/* 🔥 LABEL */}
           {form.password && (
             <p className="text-xs mt-1 text-gray-500">
               Strength:{" "}
@@ -188,7 +188,7 @@ const Register = ({ setView, setEmail }) => {
       <p className="text-sm text-center text-gray-600 mt-4">
         Already have an account?{" "}
         <span
-          onClick={() => setView("login")}
+          onClick={() => setAuthView("login")}   // 🔥 FIXED
           className="text-purple-600 cursor-pointer hover:underline"
         >
           Login

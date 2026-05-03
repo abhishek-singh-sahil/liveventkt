@@ -9,18 +9,22 @@ import {
 
 import Rootlayout from './layouts/Rootlayout'
 import Home from './pages/Home'
-import Register from './pages/Register'
-import Login from './pages/Login'
 import Eventdetail from './pages/Eventdetail'
 import BookNow from './pages/BookNow'
-import VerifyOtp from './pages/VerifyOtp'
 import BookingPending from './pages/BookingPending'
+import Notifications from './pages/Notifications'
+import Rewards from './pages/Rewards'
 
-/* 🔥 NEW IMPORTS */
+/* 🔥 PROFILE */
 import BookingList from './components/BookingList'
 import MyProfile from './layouts/MyProfile'
 import EditProfile from './components/EditProfile'
 import UpdateEmail from './components/UpdateEmail'
+
+/* 🔥 AUTH */
+import ProtectedRoute from './components/ProtectedRoute'
+import AuthModal from './components/AuthModal'
+import Support from './components/Support'
 
 const App = () => {
   const { loading } = useContext(AuthContext)
@@ -36,28 +40,97 @@ const App = () => {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path='/' element={<Rootlayout />}>
-        {/* 🔹 MAIN ROUTES */}
+        {/* 🔹 MAIN */}
         <Route index element={<Home />} />
-        <Route path='register' element={<Register />} />
-        <Route path='login' element={<Login />} />
         <Route path='event/:id' element={<Eventdetail />} />
-        <Route path='book/:id' element={<BookNow />} />
+
+        {/* 🔒 PROTECTED */}
+        <Route
+          path='book/:id'
+          element={
+            <ProtectedRoute>
+              <BookNow />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path='booking-pending' element={<BookingPending />} />
 
-        {/* 🔥 MY PROFILE (NEW STRUCTURE) */}
+        {/* 🔥 PROFILE */}
         <Route path='my-profile' element={<MyProfile />}>
-          <Route index element={<EditProfile />} />
-          <Route path='my-bookings' element={<BookingList />} />
-          <Route path='saved-devices' element={<div>Saved Devices</div>} />
-          <Route path='stream' element={<div>Stream Library</div>} />
-          <Route path='payments' element={<div>Payments</div>} />
+          {/* 🔴 INDEX (Edit Profile) → PROTECTED */}
+          <Route
+            index
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 🔴 PROTECTED */}
+          <Route
+            path='my-bookings'
+            element={
+              <ProtectedRoute>
+                <BookingList />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path='saved-devices'
+            element={
+              <ProtectedRoute>
+                <div>Saved Devices</div>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path='stream'
+            element={
+              <ProtectedRoute>
+                <div>Stream Library</div>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path='payments'
+            element={
+              <ProtectedRoute>
+                <div>Payments</div>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 🟢 PUBLIC */}
+          <Route path='notifications' element={<Notifications />} />
+          <Route path='rewards' element={<Rewards />} />
+          <Route path='support' element={<Support/>} />
         </Route>
-        <Route path='update-email' element={<UpdateEmail/>}/>
+
+        <Route
+          path='update-email'
+          element={
+            <ProtectedRoute>
+              <UpdateEmail />
+            </ProtectedRoute>
+          }
+        />
       </Route>
     )
   )
 
-  return <RouterProvider router={router} />
+  return (
+    <>
+      <RouterProvider router={router} />
+
+      {/* 🔥 GLOBAL AUTH MODAL (MOST IMPORTANT) */}
+      <AuthModal />
+    </>
+  )
 }
 
 export default App

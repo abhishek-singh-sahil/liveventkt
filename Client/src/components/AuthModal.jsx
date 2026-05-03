@@ -1,62 +1,47 @@
-import React, { useEffect } from 'react'
-import Login from '../pages/Login'
-import { useState } from 'react'
-import VerifyOtp from '../pages/VerifyOtp'
-import Register from '../pages/Register'
+import { useContext } from "react"
+import { AuthContext } from "../context/AuthContext"
 
-const AuthModal = ({ open, setOpen }) => {
-  const [view, setView] = useState('login') // login | otp
-  const [email, setEmail] = useState('')
-  // Prevent background scroll
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : 'auto'
-  }, [open])
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import VerifyOtp from "../pages/VerifyOtp";
 
-  useEffect(() => {
-    if (open) {
-      setView('login')
-      setEmail('')
-    }
-  }, [open])
+const AuthModal = () => {
+  const {
+    openAuth,
+    setOpenAuth,
+    authView,
+    setAuthView,
+    authEmail,
+    setAuthEmail
+  } = useContext(AuthContext)
 
-  if (!open) return null
+  if (!openAuth) return null
 
   return (
     <div
-      onClick={() => setOpen(false)}
-      className='fixed inset-0 z-50 flex items-center justify-center 
-                 bg-black/40 backdrop-blur-sm'
+  onClick={() => setOpenAuth(false)}
+  className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+>
+  <div
+    onClick={(e) => e.stopPropagation()}
+    className="bg-white w-[400px] max-w-[90%] p-6 rounded-xl shadow-lg relative"
+  >
+
+    {/* CLOSE BUTTON */}
+    <button
+      onClick={() => setOpenAuth(false)}
+      className="absolute top-3 right-3 text-lg"
     >
-      {/* Modal Box */}
-      <div
-        onClick={e => e.stopPropagation()}
-        className='bg-white w-[400px] p-6 rounded-xl shadow-lg relative'
-      >
-        {/* Close Button */}
-        <button
-          onClick={() => setOpen(false)}
-          className='absolute top-3 right-3 text-lg'
-        >
-          ✕
-        </button>
+      ✕
+    </button>
 
-        {/* Placeholder */}
-        <div className='mt-4 text-center text-gray-500'>
-          {view === 'login' && (
-            <Login setOpen={setOpen} setView={setView} setEmail={setEmail} />
-          )}
+    {authView === "login" && <Login />}
+    {authView === "register" && <Register />}
+    {authView === "otp" && <VerifyOtp />}
 
-          {view === 'register' && (
-            <Register setView={setView} setEmail={setEmail} />
-          )}
-
-          {view === 'otp' && (
-            <VerifyOtp setOpen={setOpen} email={email} setView={setView} />
-          )}
-        </div>
-      </div>
-    </div>
+  </div>
+</div>
   )
 }
 
-export default AuthModal
+export default AuthModal;

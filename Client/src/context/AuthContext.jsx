@@ -6,6 +6,9 @@ export const AuthContext = React.createContext()
 export const AuthProvider = ({ children }) => {
   const [user, setuser] = useState(null)
   const [loading, setloading] = useState(true)
+const [openAuth, setOpenAuth] = useState(false)
+const [authView, setAuthView] = useState("login") // login | register | otp
+const [authEmail, setAuthEmail] = useState("")
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
@@ -114,16 +117,24 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        verifyOtp,
-        register,
-        logout,
-        updateUser   // 👈 IMPORTANT
-      }}
-    >
+  value={{
+    user,
+    loading,
+    login,
+    verifyOtp,
+    register,
+    logout,
+    updateUser,
+
+    // 🔥 NEW
+    openAuth,
+    setOpenAuth,
+    authView,
+    setAuthView,
+    authEmail,
+    setAuthEmail
+  }}
+>
       {children}
     </AuthContext.Provider>
   )

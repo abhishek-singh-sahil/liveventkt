@@ -1,10 +1,13 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
-const Login = ({ setOpen, setView, setEmail }) => {
-  const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
+const Login = () => {
+  const {
+    login,
+    setOpenAuth,
+    setAuthView,
+    setAuthEmail
+  } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     email: "",
@@ -31,19 +34,17 @@ const Login = ({ setOpen, setView, setEmail }) => {
 
       // ✅ SUCCESS LOGIN
       if (data.token) {
-        setOpen(false);
-        navigate("/");
+        setOpenAuth(false);   // 🔥 CLOSE MODAL
         return;
       }
 
-      // ❗ NOT VERIFIED (NO TOKEN BUT MESSAGE EXISTS)
+      // ❗ NOT VERIFIED → OTP FLOW
       if (data.message?.includes("not OTP verified")) {
-        setEmail(form.email);   // 🔥 pass email to OTP
-        setView("otp");         // 🔥 switch modal view
+        setAuthEmail(form.email);   // 🔥 SAVE EMAIL GLOBALLY
+        setAuthView("otp");         // 🔥 SWITCH TO OTP VIEW
         return;
       }
 
-      // ❌ OTHER ERRORS
       setError(data.message || "Login failed");
 
     } catch (err) {
@@ -58,6 +59,7 @@ const Login = ({ setOpen, setView, setEmail }) => {
       <h2 className="text-xl font-semibold text-black text-center mb-5">
         Login
       </h2>
+
       <h2 className="text-xl font-semibold text-center mb-5">
         Welcome Back 👋
       </h2>
@@ -110,7 +112,7 @@ const Login = ({ setOpen, setView, setEmail }) => {
       <p className="text-sm text-center text-gray-600">
         Don’t have an account?{" "}
         <span
-          onClick={() => setView("register")}
+          onClick={() => setAuthView("register")}   // 🔥 FIXED
           className="text-purple-600 font-medium cursor-pointer hover:underline"
         >
           Create one

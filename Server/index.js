@@ -4,6 +4,7 @@ const cors = require('cors');
 
 const authRoute = require('./Routes/auth');
 const bookingRoute = require('./Routes/booking');
+const messageRoute = require('./Routes/messages')
 const eventRoute = require('./Routes/event');
 const connectDB = require('./Config/db');
 
@@ -37,7 +38,7 @@ app.use(cors({
 
 // 🔥 EXTRA HEADERS SAFETY (OPTIONAL BUT SAFE)
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://liveventkt-esrt.vercel.app");
+  res.header("Access-Control-Allow-Origin", "https://liveventkt-esrt.vercel.app", "http://localhost:5173");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
@@ -52,7 +53,7 @@ app.use(express.json());
 app.use('/api/auth', authRoute);
 app.use('/api/events', eventRoute);
 app.use('/api/booking', bookingRoute);
-
+app.use('/api/support', messageRoute);
 // 🔥 TEST ROUTE (optional but useful)
 app.get("/", (req, res) => {
   res.send("API is running...");
