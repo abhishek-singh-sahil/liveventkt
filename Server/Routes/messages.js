@@ -5,7 +5,7 @@ const Support = require("../Models/contactMessage.js");
 const {
   sendContactAutoReply,
   sendAdminNotification, // 👈 Imported the new admin mail function
-} = require("../utils/mail.js");
+} = require("../Utils/mail.js");
 
 const Router = express.Router();
 
