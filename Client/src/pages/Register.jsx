@@ -87,7 +87,7 @@ const Register = () => {
   return (
     <div className="w-full">
       <h2 className="text-xl font-semibold text-center mb-5">
-        Create Account 🚀
+        Create Account
       </h2>
 
       {error && (
@@ -179,7 +179,7 @@ const Register = () => {
 
         <button
           type="submit"
-          className="w-full py-2.5 rounded-lg text-white font-medium bg-gray-900 hover:opacity-90 transition"
+          className="cursor-pointer w-full py-2.5 rounded-lg text-white font-medium bg-gray-900 hover:opacity-90 transition"
         >
           {loading ? "Creating..." : "Create Account"}
         </button>

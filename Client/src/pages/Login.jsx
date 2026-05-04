@@ -79,25 +79,37 @@ const Login = () => {
           value={form.email}
           onChange={handleChange}
           className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
-                     focus:outline-none focus:ring-2 focus:ring-purple-500"
+                       focus:outline-none focus:ring-2 focus:ring-purple-500"
           required
         />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Enter your password"
-          value={form.password}
-          onChange={handleChange}
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
-                     focus:outline-none focus:ring-2 focus:ring-purple-500"
-          required
-        />
+        <div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
+                         focus:outline-none focus:ring-2 focus:ring-purple-500"
+            required
+          />
+          {/* 🔥 NEW: FORGOT PASSWORD LINK */}
+          <div className="flex justify-end mt-2">
+            <span 
+              onClick={() => setAuthView("forgot-password")}
+              className="text-xs text-purple-600 font-medium cursor-pointer hover:underline"
+            >
+              Forgot Password?
+            </span>
+          </div>
+        </div>
 
         <button
           type="submit"
-          className="w-full py-2.5 rounded-lg text-white font-medium
-                     bg-gray-900 hover:opacity-90 transition"
+          disabled={loading}
+          className="cursor-pointer w-full py-2.5 rounded-lg text-white font-medium
+                     bg-gray-900 hover:opacity-90 transition disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
@@ -112,7 +124,7 @@ const Login = () => {
       <p className="text-sm text-center text-gray-600">
         Don’t have an account?{" "}
         <span
-          onClick={() => setAuthView("register")}   // 🔥 FIXED
+          onClick={() => setAuthView("register")}
           className="text-purple-600 font-medium cursor-pointer hover:underline"
         >
           Create one

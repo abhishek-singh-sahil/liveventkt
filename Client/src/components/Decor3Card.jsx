@@ -1,12 +1,26 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import { FaRegClock } from 'react-icons/fa'
 import { RiTicket2Line } from 'react-icons/ri'
 import { FiShield } from 'react-icons/fi'
 
-const Decor3Card = () => {
+const Decor3Card = ({ isSearching }) => {
   return (
-    <div className='py-13 px-4'>
+    <motion.div
+      animate={{
+        opacity: isSearching ? 0 : 1,
+        y: isSearching ? 40 : 0
+      }}
+      transition={{ duration: 0.3 }}
+      className={`px-4 transition-all duration-300 ${
+        isSearching ? 'py-0' : 'py-13'
+      }`}
+      style={{
+        pointerEvents: isSearching ? 'none' : 'auto'
+      }}
+    >
       <div className='relative grid grid-cols-1 md:grid-cols-3 gap-8 mx-5'>
+        
         {/* Card 1 */}
         <div className='bg-white p-8 rounded-2xl shadow-sm border border-gray-200 flex flex-col items-center text-center hover:-translate-y-1 transition duration-300'>
           <div className='w-16 h-16 bg-gray-900 text-white rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-md'>
@@ -48,8 +62,9 @@ const Decor3Card = () => {
             encryption and 2FA protection.
           </p>
         </div>
+
       </div>
-    </div>
+    </motion.div>
   )
 }
 

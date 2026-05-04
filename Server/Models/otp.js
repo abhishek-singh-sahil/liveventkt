@@ -9,9 +9,10 @@ const otpSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  // ✅ Corrected version:
   action: {
     type: String,
-    enum: ['Account_verification', 'Event_booking', 'change_email'], // ✅ FIXED
+    enum: ['Account_verification', 'change_email', 'reset_password'], // 👈 Add it here!
     required: true
   },
   createdAt: {

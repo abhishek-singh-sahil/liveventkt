@@ -55,7 +55,7 @@ const Sidebar = ({ open, setOpen, user, logout }) => {
             {/* 🔥 EDIT PROFILE WITH ANIMATION */}
             <button
               onClick={() => goTo("/my-profile")}
-              className="flex items-center gap-1 text-sm text-purple-600 font-medium group"
+              className="cursor-pointer flex items-center gap-1 text-sm text-purple-600 font-medium group"
             >
               <Pencil
                 size={16}
@@ -121,7 +121,7 @@ const Sidebar = ({ open, setOpen, user, logout }) => {
         <div className="p-5 border-t">
           <button
             onClick={handleLogout}
-            className="w-full border border-red-400 text-red-500 py-2.5 rounded-lg 
+            className="cursor-pointer w-full border border-red-400 text-red-500 py-2.5 rounded-lg 
                        hover:bg-red-50 transition font-medium flex items-center justify-center gap-2"
           >
             <LogOut size={16} />

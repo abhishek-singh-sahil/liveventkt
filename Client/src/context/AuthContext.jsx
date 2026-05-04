@@ -6,9 +6,9 @@ export const AuthContext = React.createContext()
 export const AuthProvider = ({ children }) => {
   const [user, setuser] = useState(null)
   const [loading, setloading] = useState(true)
-const [openAuth, setOpenAuth] = useState(false)
-const [authView, setAuthView] = useState("login") // login | register | otp
-const [authEmail, setAuthEmail] = useState("")
+  const [openAuth, setOpenAuth] = useState(false)
+  const [authView, setAuthView] = useState("login") // login | register | otp | forgot-password
+  const [authEmail, setAuthEmail] = useState("")
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
@@ -52,6 +52,7 @@ const [authEmail, setAuthEmail] = useState("")
       return data
     } catch (error) {
       console.log('Error registering user', error)
+      throw error.response?.data || { message: "Registration failed" }
     }
   }
 
@@ -108,6 +109,30 @@ const [authEmail, setAuthEmail] = useState("")
     }
   }
 
+  // ==========================================
+  // 🔑 FORGOT PASSWORD (Send OTP) - NEW
+  // ==========================================
+  const forgotPassword = async (email) => {
+    try {
+      const { data } = await api.post('/auth/forgot-password', { email })
+      return data
+    } catch (error) {
+      throw error.response?.data || { message: "Failed to send reset email" }
+    }
+  }
+
+  // ==========================================
+  // 🔑 RESET PASSWORD (Verify OTP & Change) - NEW
+  // ==========================================
+  const resetPassword = async (email, otp, newPassword) => {
+    try {
+      const { data } = await api.post('/auth/reset-password', { email, otp, newPassword })
+      return data
+    } catch (error) {
+      throw error.response?.data || { message: "Failed to reset password" }
+    }
+  }
+
   // 🚪 LOGOUT
   const logout = () => {
     setuser(null)
@@ -117,24 +142,28 @@ const [authEmail, setAuthEmail] = useState("")
 
   return (
     <AuthContext.Provider
-  value={{
-    user,
-    loading,
-    login,
-    verifyOtp,
-    register,
-    logout,
-    updateUser,
+      value={{
+        user,
+        loading,
+        login,
+        verifyOtp,
+        register,
+        logout,
+        updateUser,
 
-    // 🔥 NEW
-    openAuth,
-    setOpenAuth,
-    authView,
-    setAuthView,
-    authEmail,
-    setAuthEmail
-  }}
->
+        // 🔥 NEW FORGOT PASSWORD FUNCTIONS
+        forgotPassword,
+        resetPassword,
+
+        // 🔥 MODAL & VIEW STATE
+        openAuth,
+        setOpenAuth,
+        authView,
+        setAuthView,
+        authEmail,
+        setAuthEmail
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

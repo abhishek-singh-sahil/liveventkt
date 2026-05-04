@@ -72,7 +72,7 @@ const VerifyOtp = () => {
     <form onSubmit={handleSubmit} className="w-full">
 
       <h2 className="text-xl text-black font-semibold text-center mb-2">
-        Verify OTP 🔐
+        Verify OTP
       </h2>
 
       <p className="text-sm text-gray-500 text-center mb-5">
@@ -105,7 +105,7 @@ const VerifyOtp = () => {
 
       <button
         type="submit"
-        className="w-full py-2.5 rounded-lg text-white font-medium
+        className="cursor-pointer w-full py-2.5 rounded-lg text-white font-medium
                    bg-gray-900 hover:opacity-90 transition"
       >
         {loading ? "Verifying..." : "Verify OTP"}

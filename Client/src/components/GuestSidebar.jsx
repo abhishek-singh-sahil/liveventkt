@@ -61,7 +61,7 @@ const GuestSidebar = ({ open, setOpen }) => {
 
             <button
               onClick={openLoginModal}
-              className="text-sm px-3 py-1.5 rounded-md border border-red-500 text-red-500 hover:bg-red-50 transition"
+              className="cursor-pointer text-sm px-3 py-1.5 rounded-md border border-red-500 text-red-500 hover:bg-red-50 transition"
             >
               Login / Register
             </button>

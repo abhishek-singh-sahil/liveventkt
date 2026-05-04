@@ -1,9 +1,9 @@
 const userModel = require('../Models/user')
 const otpModel = require('../Models/otp')
 const bcrypt = require('bcrypt')
-const { sendOtpMail } = require('../Utils/mail')
 const jwt = require('jsonwebtoken')
-
+// Add sendPasswordResetMail here!
+const { sendOtpMail, sendPasswordResetMail } = require('../Utils/mail')
 const generateToken = (user_id, accountType) => {
   return jwt.sign({ user_id, accountType }, process.env.PRIVATE_KEY, {
     expiresIn: '7d'
@@ -201,3 +201,75 @@ exports.updateEmail = async (req, res) => {
 };
 
 
+// ======================================
+// 1. REQUEST PASSWORD RESET (SEND OTP)
+// ======================================
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // 🔒 Security Check: Does user exist?
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      // Throw exact error requested
+      return res.status(404).json({ message: 'User is not registered with us' });
+    }
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Clear any old reset OTPs for this email, then create a new one
+    await otpModel.deleteMany({ email, action: 'reset_password' });
+    await otpModel.create({
+      email,
+      otp,
+      action: 'reset_password'
+    });
+
+    // Send the email
+    await sendPasswordResetMail(email, otp, user.name);
+
+    res.json({ message: 'Password reset OTP sent to your email.' });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ======================================
+// 2. VERIFY OTP AND SAVE NEW PASSWORD
+// ======================================
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    // 1. Check if the OTP matches and is for the 'reset_password' action
+    const otpMatch = await otpModel.findOne({
+      email,
+      otp,
+      action: 'reset_password'
+    });
+
+    if (!otpMatch) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // 2. Hash the new password (matching your registration salt rounds)
+    const salt = await bcrypt.genSalt(12);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+
+    // 3. Update the user's password in the database
+    await userModel.findOneAndUpdate(
+      { email },
+      { password: hashPassword }
+    );
+
+    // 4. Delete the OTP so it cannot be used again
+    await otpModel.deleteMany({ email, action: 'reset_password' });
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
