@@ -1,5 +1,5 @@
 const express = require("express");
-const Support = require("../models/contactMessage.js");
+const Support = require("../Models/contactMessage.js");
 
 // 🔥 IMPORT MAIL FUNCTIONS
 const {
