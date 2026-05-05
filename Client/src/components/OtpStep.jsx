@@ -118,9 +118,10 @@ const OtpStep = ({
 
       {/* VERIFY BUTTON */}
       <button
+        type="submit"
         onClick={handleVerify}
         disabled={otpValue.length !== 6 || loading}
-        className={`w-full py-3 rounded-xl font-medium text-white 
+        className={`cursor-pointer w-full py-3 rounded-xl font-medium text-white 
         ${
           otpValue.length === 6
             ? "bg-black cursor-pointer hover:opacity-90 shadow-lg"

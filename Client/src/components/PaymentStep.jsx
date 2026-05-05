@@ -39,7 +39,7 @@ const PaymentStep = ({ setPaymentOpen, bookingId }) => {
   // ✅ Pay Later
   const handlePayLater = () => {
     setPaymentOpen(false);
-    navigate("/my-bookings");
+    navigate("/my-profile/my-bookings");
   };
 
   return (
@@ -90,9 +90,10 @@ const PaymentStep = ({ setPaymentOpen, bookingId }) => {
 
         {/* 🔹 CONFIRM BUTTON */}
         <button
+        type="submit"
           onClick={handleConfirm}
           disabled={!isValidUTR(utr) || loading}
-          className={`w-full mt-5 py-3 rounded-full text-sm font-medium transition
+          className={`cursor-pointer w-full mt-5 py-3 rounded-full text-sm font-medium transition
           ${
             isValidUTR(utr)
               ? "bg-black text-white hover:opacity-90"
@@ -105,7 +106,7 @@ const PaymentStep = ({ setPaymentOpen, bookingId }) => {
         {/* 🔹 PAY LATER */}
         <button
           onClick={handlePayLater}
-          className="w-full mt-3 py-3 rounded-full text-sm font-medium 
+          className="cursor-pointer w-full mt-3 py-3 rounded-full text-sm font-medium 
                      border border-gray-300 text-gray-700 
                      hover:bg-gray-100 transition"
         >
