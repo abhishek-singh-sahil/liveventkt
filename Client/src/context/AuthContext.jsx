@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import api from '../utils/axios'
 
 export const AuthContext = React.createContext()
 
 export const AuthProvider = ({ children }) => {
-  const [user, setuser] = useState(null)
-  const [loading, setloading] = useState(true)
+  
+  // 🔥 UPGRADE 1: Instant Initialization to prevent "Flicker" on page refresh
+  const [user, setuser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem('user')
+      return storedUser ? JSON.parse(storedUser) : null
+    } catch {
+      return null
+    }
+  })
+  
+  const [loading, setloading] = useState(false) 
   const [openAuth, setOpenAuth] = useState(false)
   const [authView, setAuthView] = useState("login") // login | register | otp | forgot-password
   const [authEmail, setAuthEmail] = useState("")
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setuser(JSON.parse(storedUser))
-    }
-    setloading(false)
-  }, [])
 
   // 🔐 LOGIN
   const login = async (email, password) => {
@@ -36,7 +38,7 @@ export const AuthProvider = ({ children }) => {
 
       return data
     } catch (error) {
-      throw error.response?.data || { message: "Login failed" }
+      throw error.response?.data || { message: "Login failed. Please check your credentials." }
     }
   }
 
@@ -51,8 +53,7 @@ export const AuthProvider = ({ children }) => {
       })
       return data
     } catch (error) {
-      console.log('Error registering user', error)
-      throw error.response?.data || { message: "Registration failed" }
+      throw error.response?.data || { message: "Registration failed. Please try again." }
     }
   }
 
@@ -74,16 +75,16 @@ export const AuthProvider = ({ children }) => {
 
       return data
     } catch (error) {
-      console.log('OTP verification error', error)
-      throw error
+      throw error.response?.data || { message: "Invalid verification code." }
     }
   }
 
-  // 🔥 NEW: UPDATE PROFILE
+  // 🔥 UPDATE PROFILE
   const updateUser = async (updatedData) => {
     try {
+      // Note: Make sure this endpoint matches your backend route (e.g. /auth/update-profile)
       const { data } = await api.put(
-        '/auth/update-email',
+        '/auth/update-email', 
         updatedData,
         {
           headers: {
@@ -104,32 +105,31 @@ export const AuthProvider = ({ children }) => {
       return data
 
     } catch (error) {
-      console.log("Update error", error)
-      throw error
+      throw error.response?.data || { message: "Failed to update profile." }
     }
   }
 
   // ==========================================
-  // 🔑 FORGOT PASSWORD (Send OTP) - NEW
+  // 🔑 FORGOT PASSWORD (Send OTP) 
   // ==========================================
   const forgotPassword = async (email) => {
     try {
       const { data } = await api.post('/auth/forgot-password', { email })
       return data
     } catch (error) {
-      throw error.response?.data || { message: "Failed to send reset email" }
+      throw error.response?.data || { message: "Failed to send reset email. Verify your address." }
     }
   }
 
   // ==========================================
-  // 🔑 RESET PASSWORD (Verify OTP & Change) - NEW
+  // 🔑 RESET PASSWORD (Verify OTP & Change) 
   // ==========================================
   const resetPassword = async (email, otp, newPassword) => {
     try {
       const { data } = await api.post('/auth/reset-password', { email, otp, newPassword })
       return data
     } catch (error) {
-      throw error.response?.data || { message: "Failed to reset password" }
+      throw error.response?.data || { message: "Failed to reset password. Code may be expired." }
     }
   }
 
@@ -140,30 +140,27 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token')
   }
 
+  // 🔥 UPGRADE 2: Memoize Context values to prevent massive app-wide lag/re-renders
+  const contextValue = useMemo(() => ({
+    user,
+    loading,
+    login,
+    verifyOtp,
+    register,
+    logout,
+    updateUser,
+    forgotPassword,
+    resetPassword,
+    openAuth,
+    setOpenAuth,
+    authView,
+    setAuthView,
+    authEmail,
+    setAuthEmail
+  }), [user, loading, openAuth, authView, authEmail])
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        verifyOtp,
-        register,
-        logout,
-        updateUser,
-
-        // 🔥 NEW FORGOT PASSWORD FUNCTIONS
-        forgotPassword,
-        resetPassword,
-
-        // 🔥 MODAL & VIEW STATE
-        openAuth,
-        setOpenAuth,
-        authView,
-        setAuthView,
-        authEmail,
-        setAuthEmail
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   )

@@ -7,7 +7,7 @@ const bookingRoute = require('./Routes/booking');
 const messageRoute = require('./Routes/messages')
 const eventRoute = require('./Routes/event');
 const connectDB = require('./Config/db');
-
+const adminRoute = require('./Routes/adminRoutes')
 dotenv.config();
 
 const app = express();
@@ -54,6 +54,7 @@ app.use('/api/auth', authRoute);
 app.use('/api/events', eventRoute);
 app.use('/api/booking', bookingRoute);
 app.use('/api/support', messageRoute);
+app.use('/api/admin', adminRoute);
 // 🔥 TEST ROUTE (optional but useful)
 app.get("/", (req, res) => {
   res.send("API is running...");

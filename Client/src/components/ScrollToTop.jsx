@@ -5,9 +5,11 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    // 🔥 Instant scroll. Never use 'smooth' for route transitions!
     window.scrollTo({
       top: 0,
-      behavior: "smooth", // optional (remove if you want instant)
+      left: 0,
+      behavior: "auto", 
     });
   }, [pathname]);
 

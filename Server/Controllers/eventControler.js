@@ -14,22 +14,45 @@ const createEvent = async (req, res) => {
       .json({ message: 'Event is not created', error: error.message })
   }
 }
+
+// 🔥 UPGRADED: Added Pagination & Sorting Logic
 const showEvent = async (req, res) => {
   try {
     const { search } = req.query;
+    
+    // 1. Setup Pagination Variables (Defaults: Page 1, 8 Items)
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const skip = (page - 1) * limit;
 
+    // 2. Build the Search Query
     let query = {};
-
     if (search) {
       query.title = { $regex: search, $options: 'i' }; // case-insensitive
     }
 
-    const events = await eventModel.find(query);
-    return res.status(200).json({ events })
+    // 3. Fetch the exact chunk of events + Total Count in parallel for performance
+    const [events, totalEvents] = await Promise.all([
+      eventModel.find(query)
+        .sort({ createdAt: -1 }) // Show newest events first
+        .skip(skip)
+        .limit(limit),
+      eventModel.countDocuments(query)
+    ]);
+
+    // 4. Send back the structured payload the frontend expects
+    return res.status(200).json({ 
+      events,
+      currentPage: page,
+      totalPages: Math.ceil(totalEvents / limit),
+      hasMore: page * limit < totalEvents // Tells frontend if a "Load More" button is needed
+    })
+
   } catch (error) {
     return res.status(500).json({ error: error.message })
   }
 }
+
 const showEventById = async (req, res) => {
   try {
     const event = await eventModel.findById(req.params.id)
@@ -42,7 +65,6 @@ const showEventById = async (req, res) => {
     return res.status(500).json({ error: error.message })
   }
 }
-
 
 const updateEventbyId = async (req, res) => {
   try {
